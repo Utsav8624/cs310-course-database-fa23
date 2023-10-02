@@ -8,24 +8,36 @@ public class DAOUtility {
     
     public static final int TERMID_FA23 = 1;
     
-    public static String getResultSetAsJson(ResultSet rs) {
+    public static String getResultSetAsJson(ResultSet resultset) {
         
-        JsonArray records = new JsonArray();
-        
+        String result;
+
+        /* Create JSON Containers */
+        JsonArray json = new JsonArray();
+
         try {
-        
-            if (rs != null) {
 
-                // INSERT YOUR CODE HERE
+            /* Get Metadata */
+            ResultSetMetaData metadata = resultset.getMetaData();
+            int columnCount = metadata.getColumnCount();
 
+            while (resultset.next()) {
+                JsonObject row = new JsonObject();
+
+                for (int k = 1; k <= columnCount; ++k) {
+                    String columnname = metadata.getColumnName(k);
+                    row.put(columnname, resultset.getObject(k).toString());
+
+                }
+                json.add(row);
             }
-            
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        return Jsoner.serialize(records);
+
+        /* Encode JSON Data and Return */
+        result = json.toString();
+        return result;
         
     }
     
